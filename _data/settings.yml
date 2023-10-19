@@ -7,18 +7,19 @@ disqus:
 google-ID: 'UA-112060364-2'
 
 menu:
-- {name: 'Interesting Facts',  url: 'facts'}
-- {name: 'Learning Resources', url: 'resources'}
-- {name: 'Sample Posts',       url: 'sample-posts'}
-- {name: 'Documentation',      url: 'documentation'}
-- {name: 'About',              url: 'about'}
-- {name: 'Contact',            url: 'contact'}
+#- {name: 'Interesting Facts',  url: 'facts'}
+#- {name: 'Learning Resources', url: 'resources'}
+- {name: 'projects',       url: 'projects'}
+- {name: 'Sample Posts',      url: 'sample-posts'}
+#- {name: 'About',              url: 'about'}
+#- {name: 'Contact',            url: 'contact'}
 
 # Available social icons are powered by Font Awesome, so you can use any icon that they offer
 social:
 - {icon: 'github', link:    'https://github.com/kethangudi'}
 - {icon: 'envelope', link:   'mailto:kgudi@umich.edu'}
-#- {icon: 'rss-square', link: 'feed.xml'}
+#- {title: 'resume', 
+- {icon: 'linkedin', link: 'https://www.linkedin.com/in/kethan-gudi-b05107201'}
 # - {icon: 'rss-square', link: 'rss-feed.xml'}
 
 # Customize site text
