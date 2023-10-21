@@ -9,8 +9,8 @@ google-ID: 'UA-112060364-2'
 menu:
 #- {name: 'Interesting Facts',  url: 'facts'}
 #- {name: 'Learning Resources', url: 'resources'}
-- {name: 'projects',       url: 'projects'}
-- {name: 'Sample Posts',      url: 'sample-posts'}
+#- {name: 'projects',       url: 'projects'}
+#- {name: 'Sample Posts',      url: 'sample-posts'}
 #- {name: 'About',              url: 'about'}
 #- {name: 'Contact',            url: 'contact'}
 
@@ -23,12 +23,11 @@ social:
 # - {icon: 'rss-square', link: 'rss-feed.xml'}
 
 # Customize site text
-pagination:
-  next_page: 'Newer'
-  previous_page: 'Older'
+#pagination:
+ ## previous_page: 'Older'
 
-sharing_button_prompt: 'Feel free to share!'
+#sharing_button_prompt: 'Feel free to share!'
 
-related_posts: 'You may also enjoy...'
+#related_posts: 'You may also enjoy...'
 
-post_date_prefix: 'Written on'
+#post_date_prefix: 'Written on'
