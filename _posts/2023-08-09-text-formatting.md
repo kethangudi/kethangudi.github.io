@@ -11,6 +11,5 @@ Light Activated LED
 •	Designed voltage divider, voltage gain, and the value of the current limiting resistor
 •	Prototyped via PSpice and Falstad
 
-<iframe width="560" height="315" src="https://youtu.be/BqEoQpdSOpM" frameborder="0" allowfullscreen></iframe>
 <iframe width="560" height="315" src="https://www.youtube.com/embed/BqEoQpdSOpM?si=h5CiplXewVlXrcGy" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
