@@ -13,4 +13,4 @@ tags:
 - Considered locations in a uniformly spaced, 4-connected grid for A-star search.
 - Implemented an admissible heuristic, such as Euclidean distance to the goal.
 - Developed a heap data structure as a priority queue for visiting locations in the search grid.
-<iframe width="560" height="315" src="https://youtu.be/oaF7JqDY4Hs" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/oaF7JqDY4Hs" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
