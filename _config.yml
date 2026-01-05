@@ -3,9 +3,9 @@
 # -----------------------------------------------------------------------------
 
 title: blank # the website title (if blank, full name will be used instead)
-first_name: You
-middle_name: R.
-last_name: Name
+first_name: Kethan
+middle_name:
+last_name: Gudi
 contact_note: >
   You can even add a little note about which of these is the best way to reach you.
 description: > # the ">" symbol means to ignore newlines until "footer_text:"
@@ -135,14 +135,7 @@ external_sources:
     categories: [external-posts]
     tags: [google]
 
-# -----------------------------------------------------------------------------
-# Newsletter
-# -----------------------------------------------------------------------------
 
-newsletter:
-  enabled: false
-  endpoint: # your loops endpoint (e.g., https://app.loops.so/api/newsletter-form/YOUR-ENDPOINT)
-  # https://loops.so/docs/forms/custom-form
 
 # -----------------------------------------------------------------------------
 # Collections
@@ -197,6 +190,15 @@ exclude:
   - README.md
   - readme_preview/
   - vendor
+  - _posts/
+  - _news/
+  - _pages/teaching.md
+  - _pages/publications.md
+  - _pages/blog.md
+  - _pages/news.md
+  - _pages/repositories.md
+  - _pages/dropdown.md
+  - _pages/profiles.md
 keep_files:
   - CNAME
   - .nojekyll
