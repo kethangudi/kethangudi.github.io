@@ -9,22 +9,84 @@ related_publications: true
 ---
 
 ## Premise + Spec
-## Open Loop Modelling
-## Schematic Design
-## Layout
-## Results
-## Pain Points
-## Future Improvements
+In the automotive industry, the push for enhanced fuel efficiency and reduced
+emissions has led to the widespread adoption of stop/start technologies,
+particularly in the North American (NAFTA) market. These systems, which
+automatically turn off the engine when the vehicle is stationary, present a
+significant challenge during the restart process, commonly referred to as "warm
+crank." 
+
+During this phase, the sudden load fluctuations can cause detrimental
+effects on the vehicle's electrical system, including voltage drops that may result in flickering lights and compromised functionality of essential features like the radio and HVAC systems. 
+
+To address these issues, this project aims to develop a DC-to-DC converter designed to act as a Voltage Stabilization Module (VSM).
+
 
 <div class="row">
-    <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/1.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
+    <div class="col-sm-2 mt-3 mt-md-0">
     </div>
-    <div class="col-sm mt-3 mt-md-0">
+    <div class="col-sm-8 mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/418_project_specs.png" title="example image" class="img-fluid rounded z-depth-1" %}
+    </div>
+    <div class="col-sm-2 mt-3 mt-md-0">
+    </div>
+</div>
+
+## Open Loop Modelling + LC Sizing
+test
+## Schematic Design
+## Layout
+<div class="row">
+    <div class="col-sm-8 mt-3 mt-md-0">
+        The professor restricted us to just THT components and no polygons, so the layout is a bit simplistic.
+    </div>
+    <div class="col-sm-4 mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/418_buck_converter_layout.png" title="example image" class="img-fluid rounded z-depth-1" %}
+    </div>
+</div>
+
+## Controller Design
+add simulink code and results
+hand calculations for compensator design
+
+## Results
+add graphs of results
+
+## Pain Points
+add chart + some notes from debug doc
+
+## Future Improvements
+controller IC + make it syncrhonous
+
+SMT components for smaller form factor
+
+4 layer PCB
+
+LDO's to supply reference voltages
+
+How to supply -15V for the controller?
+
+Model controller in Simulink
+
+## Design Tradeoffs
+component sizing
+
+switching frequencies
+
+spec choices like ripple current, output voltage ripple, transient response
+
+are there design tradeoffs in the controller design?
+
+## System Integration Notes
+Modelling in full system.
+
+Protect nearby digital signals.
+
+Thermal management.
+
+<div class="row">
+    <div class="col-sm-8 mt-3 mt-md-0">
         {% include figure.liquid loading="eager" path="assets/img/3.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-    </div>
-    <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/5.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
     </div>
 </div>
 <div class="caption">
