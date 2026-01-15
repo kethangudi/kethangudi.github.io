@@ -1,10 +1,10 @@
 ---
 layout: page
-title: project 1
-description: with background image
-img: assets/img/12.jpg
+title: Custom Discrete 25W Buck Converter
+description: Current-Controlled 
+img: assets/img/418_buck_converter_pic.jpg
 importance: 1
-category: work
+category: electronics
 related_publications: true
 ---
 
@@ -17,7 +17,7 @@ To give your project a background in the portfolio page, just add the img tag to
     ---
     layout: page
     title: project
-    description: a project with a background image
+    description: Current-Controlled loop
     img: /assets/img/12.jpg
     ---
 
