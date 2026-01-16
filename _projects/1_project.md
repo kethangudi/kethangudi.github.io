@@ -33,9 +33,23 @@ To address these issues, this project aims to develop a DC-to-DC converter desig
 </div>
 
 ## Open Loop Modelling + LC Sizing
-test
-## Schematic Design
-## Layout
+To model the LED, we read off the forward voltage vs. current graph from the datasheet to get 18V and 2.5 Ohms (the slope of the I-V curve at ambient temp).
+
+We used ideal inductor, capacitor, and rough switch models. 
+
+<div class="row">
+    <div class="col-sm-3 mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/lc_sizing_equations.png" title="example image" class="img-fluid rounded z-depth-1" %}
+    </div>
+    <div class="col-sm-4 mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/418_buck_converter_lc_sizing.png" title="example image" class="img-fluid rounded z-depth-1" %}
+    </div>
+    <div class="col-sm-5 mt-3 mt-md-0">
+    {% include figure.liquid loading="eager" path="assets/img/418_sim.png" title="example image" class="img-fluid rounded z-depth-1" %}
+    </div>
+</div>
+
+## Schematic Design + Layout
 <div class="row">
     <div class="col-sm-8 mt-3 mt-md-0">
         The professor restricted us to just THT components and no polygons, so the layout is a bit simplistic.
@@ -48,6 +62,7 @@ test
 ## Controller Design
 add simulink code and results
 hand calculations for compensator design
+where are your poles and zeros placed and why?
 
 ## Results
 add graphs of results
