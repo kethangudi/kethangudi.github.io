@@ -32,10 +32,18 @@ To address these issues, this project aims to develop a DC-to-DC converter desig
     </div>
 </div>
 
-## Open Loop Modelling + LC Sizing
+## Open Loop Modelling + LC Sizing + Loss Estimation
 To model the LED, we read off the forward voltage vs. current graph from the datasheet to get 18V and 2.5 Ohms (the slope of the I-V curve at ambient temp).
 
 We used ideal inductor, capacitor, and rough switch models. 
+
+Of course losses depend on how you model the components, but we are calculating loss simply here to get a ballpark estimate for efficiency and thermal management.
+
+<div class="row">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/418_losses.png" title="example image" class="img-fluid rounded z-depth-1" %}
+    </div>
+</div>
 
 <div class="row">
     <div class="col-sm-3 mt-3 mt-md-0">
@@ -50,104 +58,184 @@ We used ideal inductor, capacitor, and rough switch models.
 </div>
 
 ## Schematic Design + Layout
+High and low side gate drivers were designed in accordance with the datasheet, as was 555 timer and the comparator.
+
+The Potentiometer in the control circuit changes the 5V reference voltage between 0.1V and 1V which sets the output current between 0.1A and 1A. It was sized with a voltage divider.
+
+There are several pull up resistors to ensure proper voltage levels.
+
+The professor restricted us to just THT components and no polygons, so the layout is a bit simplistic.
 <div class="row">
-    <div class="col-sm-8 mt-3 mt-md-0">
-        The professor restricted us to just THT components and no polygons, so the layout is a bit simplistic.
+    <div class="col-sm-3 mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/418_sawtooth.png" title="example image" class="img-fluid rounded z-depth-1" %}
     </div>
-    <div class="col-sm-4 mt-3 mt-md-0">
+    <div class="col-sm-3 mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/418_control_circuit.png" title="example image" class="img-fluid rounded z-depth-1" %}
+    </div>
+    <div class="col-sm-3 mt-3 mt-md-0">
+    {% include figure.liquid loading="eager" path="assets/img/418_buck_converter_power_circuit.png" title="example image" class="img-fluid rounded z-depth-1" %}
+    </div>
+    <div class="col-sm-3 mt-3 mt-md-0">
         {% include figure.liquid loading="eager" path="assets/img/418_buck_converter_layout.png" title="example image" class="img-fluid rounded z-depth-1" %}
     </div>
 </div>
 
 ## Controller Design
-add simulink code and results
-hand calculations for compensator design
-where are your poles and zeros placed and why?
+I derived the plant transfer function Gid (steps shown below). I then arbitrarily chose a crossover frequency and hand-tuned the PI controller. I know that's not the most scientific way to do it, but I didn't know any better at the time. I also used the wrong Vm value of 15 instead of 5, which made my phase margin too high and my crossover frequency lower than it could have been. Even worse, I soldered on the wrong value capacitor, making my Ki low and killing my bandwidth.
+
+Based on the Gid, the open loop system has two poles and one zero. The two poles are at w0 = 1/sqrt(LC) causes -40 dB/dec slope and -180 deg phase shift. There is a zero at 1/RC which adds +20 dB/dec slope and +90 degree phase shift. Thhe compensator adds a pole at the origin and zero at Ki/Kp. The pole at the origin adds +20 dB/dec and -90 deg phase shift. The zero adds +20 dB/dec and +90 deg phase shift.
+
+The compensator pole and zero work far below the resonant frequency so the plant poles and zero dominate response after crossover.
+
+Even still, the controller worked well for  0.1 to 1A load current. Just goes to show that we don't all need to be controls nerds to get the job done.
+
+I've attached the closed loop step response and Bode plot with gain and phase margins below along with the MATLAB code I used .
+
+<div class="row">
+    <div class="col-sm-2 mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/418_gid_part1.png" title="example image" class="img-fluid rounded z-depth-1" %}
+    </div>
+    <div class="col-sm-2 mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/418_gid_part2.png" title="example image" class="img-fluid rounded z-depth-1" %}
+    </div>
+    <div class="col-sm-4 mt-3 mt-md-0">
+    {% include figure.liquid loading="eager" path="assets/img/418_bode_plots.png" title="example image" class="img-fluid rounded z-depth-1" %}
+    </div>
+    <div class="col-sm-4 mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/418_step_response.png" title="example image" class="img-fluid rounded z-depth-1" %}
+    </div>
+</div>
+
+<div style="max-width: 720px; margin: 0 auto 1rem; border: 1px solid #ddd; border-radius: 4px; background: #111; color: #eee; padding: 12px; overflow: auto; max-height: 260px; font-size: 13px;">
+<pre style="margin: 0;"><code class="language-matlab">% clear all
+close all
+
+%Buck converter parameters
+C=1e-6;
+L=367e-6;
+R=20.6;
+Vg=24;
+V=20.6;
+
+D=V/Vg;              %Duty Cycle
+
+w0=sqrt(1/L/C);      %Undamped Resonant Frequency
+Q=R/sqrt(L/C);       %Quality Factor
+Gd0=Vg;              %DC Gain of Duty Cycle Transfer Function
+Gg0=D;
+
+s=tf('s');
+
+Zout=(1/R+1/s/L+s*C)^(-1);
+Gid=((s*C*R+1)*(Vg/R))/(L*C*s^2 + L*s/R + 1);
+%% Uncompensated Loop gain plot
+
+%Control parameters
+H=0.1; %aka Gm, basically the resistance of your sense resistor
+Vm=5; %peak of your ramp (sawtooth)
+
+disp('Proportional Integral Control')
+
+Kp = 17;
+Ki = 8e5;
+Gc=Kp+Ki/s
+
+figure
+bode(Gc,{0.1,1e5})
+grid
+
+disp('Loop Gain Transfer Function G_loop (s)')
+Gloop=Gid/Vm*Gc*H;
+figure
+margin(Gloop,{0.1,1e5})
+grid
+
+figure
+step(Gloop/(Gloop+1))
+title('Closed Loop Step Response')
+grid on
+
+
+% wc = w0/5;                          % desired crossover frequency (rad/s)
+% magGid = abs(freqresp(Gid,j*wc));  % plant magnitude at wc
+% Kp = Vm / H / magGid;              % proportional gain for unity loop gain
+% omega_i = wc/10;                   % PI zero 10x below crossover
+% Ki = Kp * omega_i;                  % integral gain</code></pre>
+</div>
 
 ## Results
-add graphs of results
+Inductor Current Ripple: 30mA (2.6%)
+
+LED Current Ripple: 8.7mA (0.9%)
+
+Output Voltage Ripple: 115mV (0.6%)
+
+Transient Response: 3.2ms
+
+Efficiency: 94% 
+<div class="row">
+    <div class="col-sm-4 mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/418_inductor_ripple.png" title="example image" class="img-fluid rounded z-depth-1" %}
+    </div>
+    <div class="col-sm-4 mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/418_LED_current_ripple.png" title="example image" class="img-fluid rounded z-depth-1" %}
+    </div>
+    <div class="col-sm-4 mt-3 mt-md-0">
+    {% include figure.liquid loading="eager" path="assets/img/418_output_voltage_ripple.png" title="example image" class="img-fluid rounded z-depth-1" %}
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-4 mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/418_transient.png" title="example image" class="img-fluid rounded z-depth-1" %}
+    </div>
+    <div class="col-sm-4 mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/418_efficiency.png" title="example image" class="img-fluid rounded z-depth-1" %}
+    </div>
+    <div class="col-sm-3 mt-3 mt-md-0">
+        <div style="text-align: center;">
+            <iframe width="360" height="215" src="https://www.youtube.com/embed/vKDa1ZlMXtw?si=Wy8alJovNj_asfXS" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        </div>
+    </div>
+</div>
 
 ## Pain Points
-add chart + some notes from debug doc
+Honestly a majority of the pain was just in manufacturing. The input capacitor was not big enough and PSU ripple + cable parasitics made the measurements noisy. Twisted wire pairs would be good here and following these rules for input cap sizing. The noise here propagated through the system and killed controller performance. It throttled Vref because of excessive noise on power side and noise coupling into ground loops all around. 
+
+I also soldered the wrong capacitor in the controller, which made my bandwidth much lower than expected. I realized that based on visual inspection. In the end I left it in since the performance was still acceptable.
+
+Equipment failures were common like faulty oscilloscope probes
+
+We had a minor issue where we used the output pin of the 555 timer instead of the discharge pin, but we caught that early on and fixed it by breaking the lead and added solder to the correct pin.
 
 ## Future Improvements
-controller IC + make it syncrhonous
+Use a controller IC! LM5116 by TI works well here. Also make it synchronous for higher efficiency and lower conduction losses. Also use SMT components for smaller form factor + 4 layer PCB for better noise immunity as we can have two internal ground planes or one ground and one power plane.
 
-SMT components for smaller form factor
+Model circuit in Simulink if the load is sensitive or we need a hyper-precise controller. I did this in my motor controls class. Motors and dynos are expensive. We have complex non-linear models in simulink of switches and load so we can simulate behaviour in software first. In this buck converter, the code simulation of step response was enough.
 
-4 layer PCB
+## Layout Tips
+Place the input decoupling capacitors, high-side switch, low-side switch/diode, and return (ground) as close together as possible with wide, short traces or copper pours.
 
-LDO's to supply reference voltages
+Why:The switching loop carries large fast pulsed currents. Minimizing loop area reduces parasitic inductance, lowers voltage overshoot and ringing (V = L·di/dt), and cuts EMI and switching noise
 
-How to supply -15V for the controller?
+On the control side, keep feedback traces away from inductor and switches and keep everything compact to reduce noise pickup.
+Input capacitor needs to be close to the input cables.
+Give switches and inductors large copper areas for heat dissipation or thermal vias.
 
-Model controller in Simulink
+Keep a power ground and analog ground separate to minimize noise coupling. Star ground at one point. Low impedance return path for signals and shields from EMI.
 
+Keep power side on top layer and control side on bottom layer. Use a kelvin sense resistor and route a diff pair to the controller.
 ## Design Tradeoffs
-component sizing
+component sizing: inductor and capacitor size tradeoffs with switching frequencies and ripple. Larger L and C reduce ripple but increase size and cost. Higher switching frequencies allow smaller L and C but increase switching losses and EMI. Find a balance based on application requirements. 
 
-switching frequencies
+Decide spec choices like ripple current, output voltage ripple, transient response, and efficiency based on application needs. For example, LED drivers may prioritize low current ripple for consistent brightness, while battery chargers may focus on efficiency to minimize heat generation.
 
-spec choices like ripple current, output voltage ripple, transient response
+Digital or Analog Control: Digital is more flexible and easier to tune, but analog is lower cost and lower power consumption. Always use analog for fast switching convertert. Digital is more for slow systems like solar MPPT or battery management.
 
-are there design tradeoffs in the controller design?
+CCM vs DCM: 
+Use DCM when control simplicity or light-load efficiency matters more than conduction loss. The plant is first order so easy to control voltage and no RHP Zero (seen in boost/flyback). In light loads, switching loss dominates so DCM decreases this.
 
 ## System Integration Notes
-Modelling in full system.
+Modelling in full system. 
 
 Protect nearby digital signals.
 
-Thermal management.
-
-<div class="row">
-    <div class="col-sm-8 mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/3.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-    </div>
-</div>
-<div class="caption">
-    Caption photos easily. On the left, a road goes through a tunnel. Middle, leaves artistically fall in a hipster photoshoot. Right, in another hipster photoshoot, a lumberjack grasps a handful of pine needles.
-</div>
-<div class="row">
-    <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/5.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-    </div>
-</div>
-<div class="caption">
-    This image can also have a caption. It's like magic.
-</div>
-
-You can also put regular text between your rows of images, even citations {% cite einstein1950meaning %}.
-Say you wanted to write a bit about your project before you posted the rest of the images.
-You describe how you toiled, sweated, _bled_ for your project, and then... you reveal its glory in the next row of images.
-
-<div class="row justify-content-sm-center">
-    <div class="col-sm-8 mt-3 mt-md-0">
-        {% include figure.liquid path="assets/img/6.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-    </div>
-    <div class="col-sm-4 mt-3 mt-md-0">
-        {% include figure.liquid path="assets/img/11.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-    </div>
-</div>
-<div class="caption">
-    You can also have artistically styled 2/3 + 1/3 images, like these.
-</div>
-
-The code is simple.
-Just wrap your images with `<div class="col-sm">` and place them inside `<div class="row">` (read more about the <a href="https://getbootstrap.com/docs/4.4/layout/grid/">Bootstrap Grid</a> system).
-To make images responsive, add `img-fluid` class to each; for rounded corners and shadows use `rounded` and `z-depth-1` classes.
-Here's the code for the last row of images above:
-
-{% raw %}
-
-```html
-<div class="row justify-content-sm-center">
-  <div class="col-sm-8 mt-3 mt-md-0">
-    {% include figure.liquid path="assets/img/6.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-  </div>
-  <div class="col-sm-4 mt-3 mt-md-0">
-    {% include figure.liquid path="assets/img/11.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-  </div>
-</div>
-```
-
-{% endraw %}
