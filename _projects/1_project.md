@@ -1,10 +1,10 @@
 ---
 layout: page
 title: Custom Discrete 25W Buck Converter
-description: Current-Controlled 
+description: Current-Controlled LED Driver
 img: assets/img/418_buck_converter_pic.jpg
 importance: 1
-category: electronics
+category: electronics + controls
 related_publications: true
 ---
 

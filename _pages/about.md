@@ -24,4 +24,4 @@ latest_posts:
   limit: 0 # leave blank to include all the blog posts
 ---
 
-Currently a student at University of Michigan, graduating in 2026. Outside of work, I enjoy running, climbing, calisthenics, reading, and meditation.
+Currently a student at University of Michigan, graduating in 2026. Outside of school and work, I enjoy cowboy camping, climbing, calisthenics, reading, and meditation.
